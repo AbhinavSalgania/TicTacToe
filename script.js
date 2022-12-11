@@ -34,3 +34,13 @@ const player = (name, symbol) => {
         getSymbol,
     };
 }
+
+// display GameBoard on screen
+
+const displayController = (() => {
+    const gBoard = document.querySelector('#gameBoard');
+    const boxes = document.querySelectorAll('.box');
+    const resetButton = document.querySelector('#reset');
+    const message = document.querySelector('#message');
+
+
