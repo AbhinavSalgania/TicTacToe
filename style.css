@@ -9,14 +9,20 @@ body{
     height: 100%;
 }
 
-h1 {
+.h1 {
     font-size: 3em;
     font-weight: bold;
     color: rgb(163, 163, 163);
     text-align: center;
-    margin: 0 0 0.5em 0;
-    padding: 0;
-    margin-top: 0.5em;
+    background-color: rgb(19, 19, 19);
+    height: 2em;
+    padding-top: 1em;
+}
+
+#message{
+    font-size: 1.5em;
+    color: rgb(163, 163, 163);
+    text-align: center;
 }
 
 #gameBoard{
@@ -37,7 +43,12 @@ h1 {
     width: 124px;
     height: 124px;
     border: 1px solid rgb(232, 231, 232);
-
+    background-color: rgb(19, 19, 19);
+    text-align: center;
+    font-size: 4em;
+    color: rgb(163, 163, 163);
+    vertical-align: middle;
+    line-height: 124px;
 }
 
 .box:hover{
@@ -80,14 +91,4 @@ a{
     color: rgb(251, 251, 251);
     text-decoration: none;
     font-size: 0.9em;
-}
-
-#message{
-    font-size: 1.5em;
-    font-weight: bold;
-    color: rgb(163, 163, 163);
-    text-align: center;
-    margin: 0 0 0.5em 0;
-    margin-top: 0.5em;
-
 }
