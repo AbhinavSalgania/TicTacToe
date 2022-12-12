@@ -10,7 +10,6 @@ let message = document.querySelector('#message');
 // Factory Functions
 
 const player = (name, symbol) => {
-    console.log('player');
     const getName = () => name;
     const getSymbol = () => symbol;
 
@@ -32,7 +31,6 @@ let gameOver = false;
 // Gameboard Module
 
 const gameBoard = (() => {
-    console.log('gameBoard');
     let board = ['', '', '', '', '', '', '', '', ''];
     
     const getBoard = () => board;
@@ -41,8 +39,12 @@ const gameBoard = (() => {
         board[index] = player;
     };
     
+    // reset the boxes color
     const resetBoard = () => {
         board = ['', '', '', '', '', '', '', '', ''];
+        boxes.forEach((box) => {
+            box.style.color = 'rgb(163,163,163)';
+        });
     };
     
     return {
@@ -55,10 +57,8 @@ const gameBoard = (() => {
 // displayController Module
 
 const displayController = (() => {
-    console.log('displayController');
     
     const render = () => {
-        console.log('render');
         let board = gameBoard.getBoard();
         boxes.forEach((box, index) => {
             box.textContent = board[index];
@@ -75,21 +75,34 @@ const displayController = (() => {
 
     resetButton.addEventListener('click', reset);
 
+    // check for draw
     const addClickEvent = () => {
-        console.log('addClickEvent');
         boxes.forEach((box, index) => {
             box.addEventListener('click', () => {
                 if (gameBoard.getBoard()[index] === '' && !gameOver) {
-                
+                    
                     gameBoard.setBoard(index, currentPlayer.getSymbol());
                     render();
 
-                    if (checkWin()) 
-                    {
+
+                    if (gameFlow.checkWin()){
                         message.textContent = `${currentPlayer.getName()} wins!`;
                         gameOver = true;
-                    } else {
-                        switchPlayer();
+                    } 
+                    else {
+                        gameFlow.switchPlayer();
+                    }
+                    // check for draw
+                    let draw = true;
+                    gameBoard.getBoard().forEach((box) => {
+                        if (box === '' ) {
+                            draw = false;
+                        }
+                    }
+                    );
+                    if (draw && !gameOver) {
+                        message.textContent = 'Draw!';
+                        gameOver = true;
                     }
                 }
             });
@@ -104,9 +117,9 @@ const displayController = (() => {
 // Game Module
 
 const gameFlow = (() => {
-    console.log('gameFlow');
 
-    const checkWin = () => {
+    const checkWin = () => 
+    {
         let win = false;
         let board = gameBoard.getBoard();
         let winConditions = [
@@ -122,6 +135,9 @@ const gameFlow = (() => {
 
         winConditions.forEach((condition) => {
             if (board[condition[0]] === board[condition[1]] && board[condition[1]] === board[condition[2]] && board[condition[0]] !== '') {
+                boxes[condition[0]].style.color = 'green';
+                boxes[condition[1]].style.color = 'green';
+                boxes[condition[2]].style.color = 'green';
                 win = true;
             }
         });
