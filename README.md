@@ -1,4 +1,4 @@
-Tic Tac Toe game
+# Tic Tac Toe game
 
 Simple project to practice Factory functions and module patterns.
 
