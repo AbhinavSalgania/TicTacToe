@@ -1,5 +1,18 @@
 // Two player Tic Tac Toe game using Factory Functions
-// and the Module Patterns
+// and the Module Patterns 
+// hosted on Firebase
+
+// Firebase
+
+firebase.initializeApp({
+    apiKey: "AIzaSyBHpRt93zDNSfosVB4BtMifms90EgJtC18",
+    authDomain: "tictactoe-3d907.firebaseapp.com",
+    projectId: "tictactoe-3d907",
+    storageBucket: "tictactoe-3d907.appspot.com",
+    messagingSenderId: "1013988218237",
+    appId: "1:1013988218237:web:3fcff00e0ce9b44854e814",
+    measurementId: "G-Z76FKG7442"
+});
 
 // DOM elements
 
@@ -159,3 +172,42 @@ const gameFlow = (() => {
         switchPlayer,
     };
 })();
+
+
+// Firebase
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+const user= auth.currentUser;
+
+const signIn = () => {
+    let provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider);
+}
+
+const signOut = () => {
+    auth.signOut();
+}
+
+let signInButton = document.getElementById('signin');
+signInButton.addEventListener('click', signIn);
+
+let signOutButton = document.getElementById('signout');
+signOutButton.addEventListener('click', signOut);
+
+
+
+const onAuthStateChanged = () => {
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            console.log(user.email);
+            console.log(user.displayName);
+
+        } else {
+            console.log('No user signed in');
+        }
+    });
+}
+
+onAuthStateChanged();
+
