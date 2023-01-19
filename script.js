@@ -19,6 +19,31 @@ firebase.initializeApp({
 let boxes = document.querySelectorAll('.box');
 const resetButton = document.querySelector('#reset');
 let message = document.querySelector('#message');
+const playScreen = document.querySelector('#playScreen');
+const startScreen = document.querySelector('#startScreen');
+const vsComputer = document.querySelector('#vsComputer');
+const vsPlayer = document.querySelector('#vsPlayer');
+
+// hide play screen and show start screen on page load
+playScreen.style.display = 'none';
+
+// display play screen on click 
+const startGame = () => {
+    startScreen.style.display = 'none';
+    playScreen.style.display = 'block';
+}
+
+vsComputer.addEventListener('click', startGame);
+vsPlayer.addEventListener('click', startGame);
+
+
+
+
+
+
+
+
+
 
 // Factory Functions
 
