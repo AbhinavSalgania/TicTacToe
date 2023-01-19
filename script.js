@@ -23,9 +23,15 @@ const playScreen = document.querySelector('#playScreen');
 const startScreen = document.querySelector('#startScreen');
 const vsComputer = document.querySelector('#vsComputer');
 const vsPlayer = document.querySelector('#vsPlayer');
+const playerName = document.querySelector('.nameContainer');
+const pvp = document.querySelectorAll('.pvp');
 
 // hide play screen and show start screen on page load
 playScreen.style.display = 'none';
+
+pvp.forEach((player) => {
+    player.style.display = 'none';
+});
 
 // display play screen on click 
 const startGame = () => {
@@ -36,14 +42,14 @@ const startGame = () => {
 vsComputer.addEventListener('click', startGame);
 vsPlayer.addEventListener('click', startGame);
 
+// display player name input on click
+vsPlayer.addEventListener('click', () => {
+    pvp.forEach((player) => {
+        player.style.display = 'block';
+    });
+});
 
-
-
-
-
-
-
-
+// player name input
 
 // Factory Functions
 
@@ -58,11 +64,29 @@ const player = (name, symbol) => {
 };
 
 // global variables
-
+let player1Name = document.querySelector('#player1');
+let player2Name = document.querySelector('#player2');
 let player1 = player('Player 1', 'X');
 let player2 = player('Player 2', 'O');
 let currentPlayer = player1;
+
+
 let gameOver = false;
+
+
+player1Name.addEventListener('change', () => {
+    player1 = player(player1Name.value, 'X');
+    currentPlayer = player1;
+    console.log(currentPlayer.getSymbol());
+    message.textContent = `${player1.getName()}'s turn`;
+
+});
+
+player2Name.addEventListener('change', () => {
+    player2 = player(player2Name.value, 'O');
+    console.log(player2.getSymbol());
+});
+
 
 // Modules
 
@@ -73,8 +97,8 @@ const gameBoard = (() => {
     
     const getBoard = () => board;
     
-    const setBoard = (index, player) => {
-        board[index] = player;
+    const setBoard = (index, playerSymbol) => {
+        board[index] = playerSymbol;
     };
     
     // reset the boxes color
@@ -109,6 +133,13 @@ const displayController = (() => {
         message.textContent = "X's turn";
         gameOver = false;
         currentPlayer = player1;
+        // clear player names and reset player names
+        player1Name.value = '';
+        player2Name.value = '';
+        player1 = player('Player 1', 'X');
+        player2 = player('Player 2', 'O');
+        currentPlayer = player1;
+        
     }
 
     resetButton.addEventListener('click', reset);
@@ -182,13 +213,16 @@ const gameFlow = (() => {
         return win;
     };
 
+
     const switchPlayer = () => {
         if (currentPlayer === player1) {
             currentPlayer = player2;
-            message.textContent = "O's turn";
+            message.textContent = `${player2.getName()}'s turn`;
+            console.log(player2.getName());
         } else {
             currentPlayer = player1;
-            message.textContent = "X's turn";
+            console.log(currentPlayer.getName());
+            message.textContent = `${player1.getName()}'s turn`;
         }
     };
 
@@ -197,6 +231,24 @@ const gameFlow = (() => {
         switchPlayer,
     };
 })();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Firebase
