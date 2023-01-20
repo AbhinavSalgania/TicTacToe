@@ -26,32 +26,7 @@ const vsPlayer = document.querySelector('#vsPlayer');
 const playerName = document.querySelector('.nameContainer');
 const pvp = document.querySelectorAll('.pvp');
 
-// hide play screen and show start screen on page load
-playScreen.style.display = 'none';
 
-pvp.forEach((player) => {
-    player.style.display = 'none';
-});
-
-// display play screen on click 
-const startGame = () => {
-    startScreen.style.display = 'none';
-    playScreen.style.display = 'block';
-}
-
-vsComputer.addEventListener('click', startGame);
-vsPlayer.addEventListener('click', startGame);
-
-// display player name input on click
-vsPlayer.addEventListener('click', () => {
-    pvp.forEach((player) => {
-        player.style.display = 'block';
-    });
-});
-
-// player name input
-
-// Factory Functions
 
 const player = (name, symbol) => {
     const getName = () => name;
@@ -69,22 +44,51 @@ let player2Name = document.querySelector('#player2');
 let player1 = player('Player 1', 'X');
 let player2 = player('Player 2', 'O');
 let currentPlayer = player1;
-
-
 let gameOver = false;
+let playvsComputer = false;
+let oppcomputer = false;
+// hide play screen and show start screen on page load
+playScreen.style.display = 'none';
 
+pvp.forEach((player) => {
+    player.style.display = 'none';
+});
 
+// display play screen on click 
+const startGame = () => {
+    startScreen.style.display = 'none';
+    playScreen.style.display = 'block';
+}
+
+vsComputer.addEventListener('click', () => {
+    const computer = player('Computer', 'O');
+    player2 = computer;
+    playvsComputer = true;
+    oppcomputer = true;
+    startGame();
+});
+
+vsPlayer.addEventListener('click', startGame);
+
+// display player name input on click
+vsPlayer.addEventListener('click', () => {
+    pvp.forEach((player) => {
+        player.style.display = 'block';
+    });
+});
+
+// player name input
+
+// Factory Functions
 player1Name.addEventListener('change', () => {
     player1 = player(player1Name.value, 'X');
     currentPlayer = player1;
-    console.log(currentPlayer.getSymbol());
     message.textContent = `${player1.getName()}'s turn`;
 
 });
 
 player2Name.addEventListener('change', () => {
     player2 = player(player2Name.value, 'O');
-    console.log(player2.getSymbol());
 });
 
 
@@ -116,6 +120,7 @@ const gameBoard = (() => {
     };
 })();
 
+
 // displayController Module
 
 const displayController = (() => {
@@ -144,7 +149,9 @@ const displayController = (() => {
 
     resetButton.addEventListener('click', reset);
 
-    // check for draw
+    let clicks = 0;
+
+    // add click event to each box 
     const addClickEvent = () => {
         boxes.forEach((box, index) => {
             box.addEventListener('click', () => {
@@ -152,15 +159,31 @@ const displayController = (() => {
                     
                     gameBoard.setBoard(index, currentPlayer.getSymbol());
                     render();
-
-
+                    clicks++;
+            
                     if (gameFlow.checkWin()){
                         message.textContent = `${currentPlayer.getName()} wins!`;
                         gameOver = true;
                     } 
                     else {
                         gameFlow.switchPlayer();
+                        console.log ('wtf');
+                        if (playvsComputer && currentPlayer.getName() === 'Computer' && clicks < 5) {
+                            // if all boxes are filled after last player render, game is over and do not call computerMove()
+                    
+                            computerMove();
+                            if (gameFlow.checkWin()){
+                                message.textContent = `${currentPlayer.getName()} wins!`;
+                                gameOver = true;
+                            }
+                            else {
+                                console.log ('switching player');
+                                gameFlow.switchPlayer();
+                            }
+                            
+                        }
                     }
+
                     // check for draw
                     let draw = true;
                     gameBoard.getBoard().forEach((box) => {
@@ -178,11 +201,50 @@ const displayController = (() => {
         });
     }
 
+
+    // computer move using random number
+    const computerMove = () => {
+            
+        let board = gameBoard.getBoard();
+        let random = Math.floor(Math.random() * 9);
+        while (board[random] !== '') {
+            random = Math.floor(Math.random() * 9);
+        }
+        gameBoard.setBoard(random, player2.getSymbol());
+        console.log ('rendering computer move');
+        render();
+        if (gameFlow.checkWin()){
+            console.log('computer wins');
+            message.textContent = `${player2.getName()} wins!`;
+            gameOver = true;
+        }
+        else {
+            console.log('switching player');
+            console.log("player1: " + player1.getName());
+            console.log("player2: " + player2.getName());            
+        }
+        // check for draw
+        let draw = true;
+        console.log("checking for draw")
+        gameBoard.getBoard().forEach((box) => {
+            if (box === '' ) {
+                draw = false;
+            }
+        }
+        );
+        if (draw && !gameOver) {
+            message.textContent = 'Draw!';
+            gameOver = true;
+        }
+    }
+
     addClickEvent();
     render();
 
 })();
 
+    
+    
 // Game Module
 
 const gameFlow = (() => {
@@ -213,15 +275,18 @@ const gameFlow = (() => {
         return win;
     };
 
-
     const switchPlayer = () => {
         if (currentPlayer === player1) {
             currentPlayer = player2;
             message.textContent = `${player2.getName()}'s turn`;
-            console.log(player2.getName());
-        } else {
+        } 
+        else if (currentPlayer.getName() === 'Computer') {
             currentPlayer = player1;
-            console.log(currentPlayer.getName());
+            message.textContent = `${player1.getName()}'s turn`;
+        }
+        
+        else {
+            currentPlayer = player1;
             message.textContent = `${player1.getName()}'s turn`;
         }
     };
@@ -232,6 +297,90 @@ const gameFlow = (() => {
     };
 })();
 
+
+// add Computer Player Module
+// use minimax algorithm
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// add AI Module
+// use minimax algorithm
+
+const ai = (() => {
+    const minimax = (board, depth, isMaximizing) => {
+        let result = gameFlow.checkWin();
+        if (result !== null) {
+            return result;
+        }
+
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === '') {
+                    board[i] = computerPlayer.getComputer().getSymbol();
+                    let score = minimax(board, depth + 1, false);
+                    board[i] = '';
+                    bestScore = Math.max(score, bestScore);
+                }
+            }
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            for (let i = 0; i < board.length; i++) {
+                if (board[i] === '') {
+                    board[i] = player1.getSymbol();
+                    let score = minimax(board, depth + 1, true);
+                    board[i] = '';
+                    bestScore = Math.min(score, bestScore);
+                }
+            }
+            return bestScore;
+        }
+    };
+
+    const getBestMove = () => {
+        let bestScore = -Infinity;
+        let move;
+        for (let i = 0; i < board.length; i++) {
+            if (board[i] === '') {
+                board[i] = computerPlayer.getComputer().getSymbol();
+                let score = minimax(board, 0, false);
+                board[i] = '';
+                if (score > bestScore) {
+                    bestScore = score;
+                    move = i;
+                }
+            }
+        }
+        return move;
+    };
+
+    return {
+        getBestMove,
+    };
+})();
 
 
 
@@ -288,3 +437,80 @@ const onAuthStateChanged = () => {
 
 onAuthStateChanged();
 
+
+
+
+
+
+
+
+
+
+
+
+/* const computerPlayer = (() => {
+    const computer = player('Computer', 'O');
+    const getComputer = () => computer;
+    return {
+        getComputer,
+    };
+})();
+
+vsComputer.addEventListener('click', () => {
+    playvscomputer = true;
+
+});
+
+
+const computerMove = () => {
+    let emptyBoxes = [];
+    // find all empty boxes on the game board
+    gameBoard.getBoard().forEach((box, index) => {
+        if (box === '') {
+            emptyBoxes.push(index);
+        }
+    });
+    // randomly select an empty box and make a move
+    if (emptyBoxes.length > 0) {
+        let randomIndex = Math.floor(Math.random() * emptyBoxes.length);
+        gameBoard.setBoard(emptyBoxes[randomIndex], player2.getSymbol());
+    }
+}
+
+const addClickEvent = () => {
+    boxes.forEach((box, index) => {
+        box.addEventListener('click', () => {
+            if (gameBoard.getBoard()[index] === '' && !gameOver) {
+                gameBoard.setBoard(index, currentPlayer.getSymbol());
+                render();
+                if (gameFlow.checkWin()) {
+                    message.textContent = `${currentPlayer.getName()} wins!`;
+                    gameOver = true;
+                } else {
+                    gameFlow.switchPlayer();
+                    if (playvsComputer && currentPlayer === player2) {
+                        computerMove();
+                        render();
+                        if (gameFlow.checkWin()) {
+                            message.textContent = `Computer wins!`;
+                            gameOver = true;
+                        } else {
+                            gameFlow.switchPlayer();
+                        }
+                    }
+                }
+                // check for draw
+                let draw = true;
+                gameBoard.getBoard().forEach((box) => {
+                    if (box === '') {
+                        draw = false;
+                    }
+                });
+                if (draw && !gameOver) {
+                    message.textContent = 'Draw!';
+                    gameOver = true;
+                }
+            }
+        });
+    });
+} */
